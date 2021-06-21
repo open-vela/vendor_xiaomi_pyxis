@@ -75,7 +75,7 @@ int main(int argc, FAR char *argv[])
       syslog(LOG_WARNING, "TCP   [%d]: [%16s:%6d] -> [%16s:%6d]: RCV: %d, R: %d, P: %d\n", i++,
           inet_ntoa(laddr, local), ntohs(tcp->lport),
           inet_ntoa(raddr, remote), ntohs(tcp->rport),
-          tcp->psock->s_rcvbufs,
+          tcp->rcv_bufs,
           iob_get_queue_count(&tcp->readahead),
           iob_get_queue_count(&tcp->pendingahead));
     }
