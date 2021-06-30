@@ -66,16 +66,19 @@ int main(int argc, FAR char *argv[])
 #if defined (CONFIG_NET_TCP)
   FAR struct tcp_conn_s *tcp = NULL;
 
-  syslog(LOG_WARNING, "----------TCP----------\n");
+  syslog(LOG_WARNING, "-----------------------\n");
+  syslog(LOG_WARNING, "[TCP]                 LADDR    LPORT             "
+                      "RADDR      RPORT  RCVBUFS  SNDBUFS  SNDPEND  RCVPEND   RCVOOO\n");
 
   while ((tcp = tcp_nextconn(tcp)) != NULL)
     {
       laddr.s_addr = tcp->u.ipv4.laddr;
       raddr.s_addr = tcp->u.ipv4.raddr;
-      syslog(LOG_WARNING, "TCP   [%d]: [%16s:%6d] -> [%16s:%6d]: RCV: %d, R: %d, P: %d\n", i++,
+      syslog(LOG_WARNING, "TCP   [%d]: [%16s:%6d] -> [%16s:%6d] %8d %8d %8d %8d %8d\n", i++,
           inet_ntoa(laddr, local), ntohs(tcp->lport),
           inet_ntoa(raddr, remote), ntohs(tcp->rport),
-          tcp->rcv_bufs,
+          tcp->rcv_bufs, tcp->snd_bufs,
+          tcp_wrbuffer_pendingsize(tcp),
           iob_get_queue_count(&tcp->readahead),
           iob_get_queue_count(&tcp->pendingahead));
     }
@@ -83,16 +86,21 @@ int main(int argc, FAR char *argv[])
 
 #if defined (CONFIG_NET_UDP)
   FAR struct udp_conn_s *udp = NULL;
-  syslog(LOG_WARNING, "----------UDP----------\n");
+
+  syslog(LOG_WARNING, "-----------------------\n");
+  syslog(LOG_WARNING, "[UDP]                 LADDR    LPORT             "
+                      "RADDR      RPORT  RCVBUFS  SNDBUFS  SNDPEND  RCVPEND\n");
 
   i = 0;
   while ((udp = udp_nextconn(udp)) != NULL)
     {
       laddr.s_addr = udp->u.ipv4.laddr;
       raddr.s_addr = udp->u.ipv4.raddr;
-      syslog(LOG_WARNING, "UDP   [%d]: [%16s:%6d] -> [%16s:%6d]: R: %d\n", i++,
+      syslog(LOG_WARNING, "UDP   [%d] [%16s:%6d] -> [%16s:%6d]: %8d %8d %8d %8d\n", i++,
           inet_ntoa(laddr, local), ntohs(udp->lport),
           inet_ntoa(raddr, remote), ntohs(udp->rport),
+          udp->rcvbufs, udp->sndbufs,
+          udp_wrbuffer_pendingsize(tcp),
           iob_get_queue_count(&udp->readahead));
     }
 #endif
@@ -100,7 +108,8 @@ int main(int argc, FAR char *argv[])
 #if defined (CONFIG_NET_LOCAL)
   FAR struct local_conn_s *lo = NULL;
 
-  syslog(LOG_WARNING, "---------LOCAL---------\n");
+  syslog(LOG_WARNING, "-----------------------\n");
+  syslog(LOG_WARNING, "[LOCAL]    PATH\n");
 
   i = 0;
   while ((lo = local_nextconn(lo)) != NULL)
