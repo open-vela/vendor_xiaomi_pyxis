@@ -48,7 +48,7 @@
 #define COREDUMP_DEV      "/dev/coredump"
 #define COREDUMP_DIR      "/data/coredump"
 #define COREDUMP_MAXFILE  5
-#define COREDUMP_CBLOCK   20
+#define COREDUMP_CBLOCK   128
 
 /****************************************************************************
  * Private Types
