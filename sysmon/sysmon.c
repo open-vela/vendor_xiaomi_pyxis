@@ -36,26 +36,26 @@
 
 #include "trace.h"
 
-#ifdef CONFIG_VELA_SYSMON
+#ifdef CONFIG_PYXIS_SYSMON
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-#ifndef CONFIG_VELA_SYSMON_DAEMON_STACKSIZE
-#define CONFIG_VELA_SYSMON_DAEMON_STACKSIZE 2048
+#ifndef CONFIG_PYXIS_SYSMON_DAEMON_STACKSIZE
+#define CONFIG_PYXIS_SYSMON_DAEMON_STACKSIZE 2048
 #endif
 
-#ifndef CONFIG_VELA_SYSMON_DAEMON_PRIORITY
-#define CONFIG_VELA_SYSMON_DAEMON_PRIORITY 50
+#ifndef CONFIG_PYXIS_SYSMON_DAEMON_PRIORITY
+#define CONFIG_PYXIS_SYSMON_DAEMON_PRIORITY 50
 #endif
 
-#ifndef CONFIG_VELA_SYSMON_INTERVAL
-#define CONFIG_VELA_SYSMON_INTERVAL 2
+#ifndef CONFIG_PYXIS_SYSMON_INTERVAL
+#define CONFIG_PYXIS_SYSMON_INTERVAL 2
 #endif
 
-#ifndef CONFIG_VELA_SYSMON_MOUNTPOINT
-#define CONFIG_VELA_SYSMON_MOUNTPOINT "/proc"
+#ifndef CONFIG_PYXIS_SYSMON_MOUNTPOINT
+#define CONFIG_PYXIS_SYSMON_MOUNTPOINT "/proc"
 #endif
 
 #define MAX_CPULOAD_HISTORY 57
@@ -188,7 +188,7 @@ static int sysmon_process_directory(FAR struct dirent* entryp)
   /* Read the task status to get the task name */
 
   filepath = NULL;
-  ret = asprintf(&filepath, CONFIG_VELA_SYSMON_MOUNTPOINT "/%s/status",
+  ret = asprintf(&filepath, CONFIG_PYXIS_SYSMON_MOUNTPOINT "/%s/status",
     entryp->d_name);
   if (ret < 0 || filepath == NULL) {
     errcode = errno;
@@ -233,7 +233,7 @@ static int sysmon_process_directory(FAR struct dirent* entryp)
 
   filepath = NULL;
 
-  ret = asprintf(&filepath, CONFIG_VELA_SYSMON_MOUNTPOINT "/%s/critmon",
+  ret = asprintf(&filepath, CONFIG_PYXIS_SYSMON_MOUNTPOINT "/%s/critmon",
     entryp->d_name);
   if (ret < 0 || filepath == NULL) {
     errcode = errno;
@@ -347,7 +347,7 @@ static void sysmon_global_crit(void)
 
   filepath = NULL;
 
-  ret = asprintf(&filepath, CONFIG_VELA_SYSMON_MOUNTPOINT "/critmon");
+  ret = asprintf(&filepath, CONFIG_PYXIS_SYSMON_MOUNTPOINT "/critmon");
   if (ret < 0 || filepath == NULL) {
     errcode = errno;
     fprintf(stderr, "System Monitor: Failed to create path to Csection file: %d\n",
@@ -410,11 +410,11 @@ errout_with_filepath:
 static void sysmon_init(void)
 {
   for (int i = 0; i < FEATURES; i++) {
-    asprintf(&feature[i].path, CONFIG_VELA_SYSMON_MOUNTPOINT "/%s",
+    asprintf(&feature[i].path, CONFIG_PYXIS_SYSMON_MOUNTPOINT "/%s",
       feature[i].d_name);
     feature[i].enabled = !!fopen(feature[i].path, "r");
     printf(feature[i].enabled ? "%s/%s enabled\n" : "%s/%s disabled\n",
-      CONFIG_VELA_SYSMON_MOUNTPOINT, feature[i].d_name);
+      CONFIG_PYXIS_SYSMON_MOUNTPOINT, feature[i].d_name);
   }
 
   notectlfd = open("/dev/notectl", 0);
@@ -472,12 +472,12 @@ static int sysmon_list_once(bool graph)
 
           /* Open the top-level procfs directory */
 
-          dirp = opendir(CONFIG_VELA_SYSMON_MOUNTPOINT);
+          dirp = opendir(CONFIG_PYXIS_SYSMON_MOUNTPOINT);
           if (dirp == NULL) {
             /* Failed to open the directory */
 
             fprintf(stderr, "System Monitor: Failed to open directory: %s\n",
-              CONFIG_VELA_SYSMON_MOUNTPOINT);
+              CONFIG_PYXIS_SYSMON_MOUNTPOINT);
 
             if (++errcount > 100) {
               fprintf(stderr, "System Monitor: Too many errors ... exiting\n");
@@ -635,7 +635,7 @@ static int sysmon_daemon(int argc, char** argv)
     /* Wait for the next sample interval */
     if (notectl.enabled)
       notectl_enable(true, notectlfd);
-    sleep(CONFIG_VELA_SYSMON_INTERVAL);
+    sleep(CONFIG_PYXIS_SYSMON_INTERVAL);
     if (notectl.enabled)
       notectl_enable(false, notectlfd);
 
@@ -679,8 +679,8 @@ int sysmon_start_main(int argc, char** argv)
     g_sysmon.started = true;
     g_sysmon.stop = false;
 
-    ret = task_create("System Monitor", CONFIG_VELA_SYSMON_DAEMON_PRIORITY,
-      CONFIG_VELA_SYSMON_DAEMON_STACKSIZE,
+    ret = task_create("System Monitor", CONFIG_PYXIS_SYSMON_DAEMON_PRIORITY,
+      CONFIG_PYXIS_SYSMON_DAEMON_STACKSIZE,
       (main_t)sysmon_daemon, argv);
     if (ret < 0) {
       int errcode = errno;
@@ -726,4 +726,4 @@ int main(int argc, char** argv)
   sysmon_deinit();
 }
 
-#endif /* CONFIG_VELA_SYSMON */
+#endif /* CONFIG_PYXIS_SYSMON */
