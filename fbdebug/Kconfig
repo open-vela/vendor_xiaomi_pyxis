@@ -1,0 +1,37 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+menuconfig PYXIS_FBDEBUG
+	tristate "Framebuffer Debug Tool"
+	default n
+	depends on VIDEO_FB
+	depends on LV_USE_DECODER_LODEPNG
+	select CODECS_BASE64
+	---help---
+		A simple tool for debugging system framebuffer.
+
+if PYXIS_FBDEBUG
+
+config PYXIS_FBDEBUG_STACKSIZE
+	int "FBdebug stack size"
+	default 4096
+	---help---
+		The stack size to use the fbdebug tool.  Default: 2048
+
+config PYXIS_FBDEBUG_PRIORITY
+	int "FBdebug priority"
+	default 100
+	---help---
+		The priority to use the fbdebug tool.  Default: 100
+
+config PYXIS_FBDEBUG_FBPATH
+	string "Default framebuffer path"
+	default "/dev/fb0"
+
+config PYXIS_FBDEBUG_SWAPRB
+	bool "Swap R & B channel"
+	default n
+
+endif
