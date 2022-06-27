@@ -14,6 +14,6 @@
 # limitations under the License.
 #
 
-ifneq ($(CONFIG_VELA_SYSMON),)
+ifneq ($(CONFIG_PYXIS_SYSMON),)
 CONFIGURED_APPS += $(APPDIR)/vendor/xiaomi/vela/pyxis/sysmon
 endif
