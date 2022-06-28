@@ -8,6 +8,7 @@ menuconfig PYXIS_FBDEBUG
 	default n
 	depends on VIDEO_FB
 	depends on LV_USE_DECODER_LODEPNG
+	select NETUTILS_CODECS
 	select CODECS_BASE64
 	---help---
 		A simple tool for debugging system framebuffer.
