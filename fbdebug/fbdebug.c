@@ -85,8 +85,8 @@ int main(int argc, FAR char *argv[])
   uint32_t color = 0xDEADBEEF;
   int x = 0;
   int y = 0;
-  int w = 0;
-  int h = 0;
+  int w = 1;
+  int h = 1;
   int ret;
   int c;
   int gflag = 0;
@@ -152,13 +152,15 @@ int main(int argc, FAR char *argv[])
   printf("Arguments:\n");
   printf("  -D: override default framebuffer path defined in Kconfig");
   printf("  -g: get screenshot\n");
-  printf("  -x/y: area start position, default to zero\n");
-  printf("  -w/h: area height, must be positive\n");
+  printf("  -x/y: area start position x & y, default to zero\n");
+  printf("  -w/h: area width & height(must be positive), default to 1\n");
   printf("  -b: print base64-encoded image string\n");
   printf("  -o: write png file to <out_path>\n");
   printf("  -s: set area to target color, must be used together with -c <color_hex>\n");
   printf("  -m: mark the area with rectangle frame, color is <color_hex> or, if not specified, purple\n");
-  printf("\nExample: fbdebug -x 200 -y 200 -w 50 -h 50 -g -b -s -c 0xFF00FF00  // encode area (50, 50) at (200, 200) to base64 and print, then set the area to green\n");
+  printf("\nExample: fbdebug -g  // get the first pixel on framebuffer and print in hex\n");
+  printf("         fbdebug -g -x 100 -y 100 -w 50 -h 50 -m // print hex color values in area (50, 50) at (100, 100) and mark the area with purple\n");
+  printf("         fbdebug -x 200 -y 200 -w 50 -h 50 -g -b -s -c 0xFF00FF00  // encode area (50, 50) at (200, 200) to base64 and print, then set the area to green\n");
   printf("         fbdebug -w 480 -h 480 -g -o /data/screenshot.png    //save area (480, 480) at (0, 0) to file\n");
   printf("\n");
   if (sflag && color == 0xDEADBEEF)
@@ -242,7 +244,7 @@ int main(int argc, FAR char *argv[])
             if (state.pinfo.bpp == 32)
               for (int j = 0; j < w; j++)
               {
-                printf("%lx ", ((uint32_t*)fb)[j]);
+                printf("%" PRIx32 " ", ((uint32_t*)fb)[j]);
               }
             else if (state.pinfo.bpp == 16)
               for (int j = 0; j < w; j++)
@@ -296,7 +298,7 @@ int main(int argc, FAR char *argv[])
                     }
                   else
                     {
-                      printf("Write file to %s failed", out_path);
+                      printf("Write file to %s failed: %u", out_path, error);
                     }
                 }
               if (base64)
@@ -320,7 +322,7 @@ int main(int argc, FAR char *argv[])
     {
       free(base64str);
     }
-  if (sflag && color == 0xDEADBEEF)
+  if (sflag && color != 0xDEADBEEF)
     for (int i = 0; i < h; i++)
       {
         if (state.pinfo.bpp == 32)
