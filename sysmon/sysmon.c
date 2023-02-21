@@ -117,7 +117,7 @@ static int clhistory[MAX_CPULOAD_HISTORY];
 
 static bool notectl_enable(int flag, int notectlfd)
 {
-#ifdef CONFIG_DRIVER_NOTECTL
+#ifdef CONFIG_DRIVERS_NOTECTL
   struct note_filter_mode_s mode;
   int oldflag;
 

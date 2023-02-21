@@ -41,7 +41,7 @@ extern "C"
  * Public Function Prototypes
  ****************************************************************************/
 
-#ifdef CONFIG_DRIVER_NOTERAM
+#ifdef CONFIG_DRIVERS_NOTERAM
 
 /****************************************************************************
  * Name: trace_dump
@@ -83,14 +83,14 @@ bool sysmon_trace_dump_get_overwrite(void);
 
 void sysmon_trace_dump_set_overwrite(bool mode);
 
-#else /* CONFIG_DRIVER_NOTERAM */
+#else /* CONFIG_DRIVERS_NOTERAM */
 
 #define sysmon_trace_dump(out)
 #define sysmon_trace_dump_clear()
 #define sysmon_trace_dump_get_overwrite()      0
 #define sysmon_trace_dump_set_overwrite(mode)  (void)(mode)
 
-#endif /* CONFIG_DRIVER_NOTERAM */
+#endif /* CONFIG_DRIVERS_NOTERAM */
 
 #undef EXTERN
 #ifdef __cplusplus
