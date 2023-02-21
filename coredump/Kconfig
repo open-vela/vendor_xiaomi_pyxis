@@ -7,4 +7,3 @@ menuconfig PYXIS_COREDUMP
 	tristate "Pyxis coredump"
 	default n
 	depends on ELF_COREDUMP
-	---help---
