@@ -453,6 +453,14 @@ static int sysmon_list_once(bool graph)
   int ret;
 
   printf("========================================\n");
+
+  #ifndef CONFIG_NSH_DISABLE_PS
+    printf("PS INFO:\n");
+    printf("---------------------------\n");
+    system("ps");
+    printf("---------------------------\n");
+  #endif
+
   for (int i = 0; i < FEATURES; i++) {
     if (feature[i].enabled) {
       switch (i) {
