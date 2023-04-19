@@ -22,10 +22,5 @@ STACKSIZE = $(CONFIG_DEFAULT_TASK_STACKSIZE)
 MODULE    = $(CONFIG_PYXIS_COREDUMP)
 
 MAINSRC   = coredump.c
-CFLAGS   += ${shell $(INCDIR) $(INCDIROPT) "$(CC)" $(APPDIR)/../nuttx}
-
-ifneq ($(CONFIG_KVDB),)
-  CFLAGS += ${shell $(INCDIR) $(INCDIROPT) "$(CC)" $(APPDIR)/frameworks/kvdb}
-endif
 
 include $(APPDIR)/Application.mk
