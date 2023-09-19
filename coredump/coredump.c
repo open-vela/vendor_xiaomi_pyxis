@@ -236,7 +236,7 @@ void do_coredump(struct memory_region_s *regions)
       return;
     }
 
-  ret = core_dump(regions, (FAR struct lib_outstream_s *)stream);
+  ret = core_dump(regions, (FAR struct lib_outstream_s *)stream, INVALID_PROCESS_ID);
   if (ret < 0)
     {
       return;
