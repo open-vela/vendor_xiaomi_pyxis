@@ -25,4 +25,6 @@ MODULE = $(CONFIG_PYXIS_FBDEBUG)
 
 MAINSRC = fbdebug.c
 
+CFLAGS += ${INCDIR_PREFIX}$(APPDIR)/../external/libpng/libpng
+
 include $(APPDIR)/Application.mk
