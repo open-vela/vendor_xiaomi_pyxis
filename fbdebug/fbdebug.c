@@ -37,7 +37,7 @@
 #include <unistd.h>
 
 #include "netutils/base64.h"
-#include "lv_porting/decoder/lodepng/lodepng.h"
+#include <png.h>
 
 /****************************************************************************
  * Preprocessor Definitions
@@ -64,8 +64,6 @@ struct fb_state_s
  * Private Data
  ****************************************************************************/
 
-static const char g_default_fbdev[] = CONFIG_PYXIS_FBDEBUG_FBPATH;
-
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
@@ -80,7 +78,8 @@ static const char g_default_fbdev[] = CONFIG_PYXIS_FBDEBUG_FBPATH;
 
 int main(int argc, FAR char *argv[])
 {
-  FAR const char *fbdev = g_default_fbdev;
+  FAR const char *fbdev = "/dev/fb0";
+  FAR const char *out_path = NULL;
   struct fb_state_s state;
   uint32_t color = 0xDEADBEEF;
   int x = 0;
@@ -93,7 +92,6 @@ int main(int argc, FAR char *argv[])
   int sflag = 0;
   int mflag = 0;
   int base64 = 0;
-  char out_path[CONFIG_NAME_MAX + 1] = { 0 };
 
   opterr = 0;
 
@@ -131,7 +129,7 @@ int main(int argc, FAR char *argv[])
         base64 = 1;
         break;
       case 'o':
-        strncpy(out_path, optarg, CONFIG_NAME_MAX);
+        out_path = optarg;
         break;
       case '?':
         if (optopt == 'D' || optopt == 'x' || optopt == 'y' || optopt == 'w'
@@ -238,7 +236,7 @@ int main(int argc, FAR char *argv[])
   fb += y * state.pinfo.stride + (x * state.pinfo.bpp >> 3);
   if (gflag)
     {
-      if (out_path[0] == '\0' && !base64)
+      if (!out_path && !base64)
         for (int i = 0; i < h; i++)
           {
             if (state.pinfo.bpp == 32)
@@ -284,26 +282,37 @@ int main(int argc, FAR char *argv[])
               memcpy(roi + i * ROI_stride, fb + i * state.pinfo.stride, ROI_stride);
 #endif
             }
-          unsigned char* png;
-          size_t pngsize;
-          unsigned error = lodepng_encode32(&png, &pngsize, roi, w, h);
-          if(!error)
+
+          if (out_path)
             {
-              if (out_path[0] != '\0')
+              png_image image;
+              int error;
+
+              /* Construct the PNG image structure. */
+
+              memset(&image, 0, sizeof(image));
+
+              image.version = PNG_IMAGE_VERSION;
+              image.width   = w;
+              image.height  = h;
+              image.format  = PNG_FORMAT_BGRA;
+
+              /* Write the PNG image. */
+
+              error = png_image_write_to_file(&image, out_path, 0, state.fbmem,
+                                              state.pinfo.stride, NULL);
+              if (error < 0)
                 {
-                  error = lodepng_save_file(png, pngsize, out_path);
-                  if (!error)
-                    {
-                      printf("Written %d bytes to %s\n", pngsize, out_path);
-                    }
-                  else
-                    {
-                      printf("Write file to %s failed: %u", out_path, error);
-                    }
+                  printf("Write file to %s failed: %d\n", out_path, error);
                 }
-              if (base64)
-                base64str = base64_encode(png, pngsize, NULL, NULL);
-              free(png);
+              else
+                {
+                  printf("Screenshot saved to %s\n", out_path);
+                }
+            }
+          if (base64)
+            {
+              /* TODO:base64str = base64_encode(png, pngsize, NULL, NULL); */
             }
           free(roi);
           if (base64str)
