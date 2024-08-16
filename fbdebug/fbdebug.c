@@ -203,7 +203,7 @@ int main(int argc, FAR char *argv[])
    * certain color formats are supported.
    */
 
-  if (state.pinfo.bpp != 32 && state.pinfo.bpp != 16 &&
+  if (state.pinfo.bpp != 32 && state.pinfo.bpp != 24 && state.pinfo.bpp != 16 &&
       state.pinfo.bpp != 8  && state.pinfo.bpp != 1)
     {
       fprintf(stderr, "ERROR: bpp=%u not supported\n", state.pinfo.bpp);
@@ -262,7 +262,7 @@ int main(int argc, FAR char *argv[])
             fb += state.pinfo.stride;
             printf("\n");
           }
-      else if (state.pinfo.bpp == 32 || w * h > 0)
+      else if (state.pinfo.bpp == 32 || state.pinfo.bpp == 24 || w * h > 0)
         {
           int ROI_stride = w * state.pinfo.bpp >> 3;
           int ROI_len = ROI_stride * h;
@@ -295,7 +295,7 @@ int main(int argc, FAR char *argv[])
               image.version = PNG_IMAGE_VERSION;
               image.width   = w;
               image.height  = h;
-              image.format  = PNG_FORMAT_BGRA;
+              image.format  = state.pinfo.bpp == 24 ? PNG_FORMAT_BGR : PNG_FORMAT_BGRA;
 
               /* Write the PNG image. */
 
